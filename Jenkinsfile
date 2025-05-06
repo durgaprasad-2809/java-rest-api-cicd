@@ -24,13 +24,6 @@ pipeline {
             }
         }
 
-        stage('Build Docker Image') {
-            steps {
-                // Build the Docker image
-                sh 'docker build -t $DOCKER_IMAGE .'
-            }
-        }
-
         stage('Push to Docker Hub') {
             steps {
                 withCredentials([usernamePassword(credentialsId: 'dockerhub-creds', usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
@@ -52,4 +45,3 @@ pipeline {
         }
     }
 }
-
