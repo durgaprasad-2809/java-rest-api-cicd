@@ -2,28 +2,31 @@ pipeline {
     agent any
 
     environment {
-        DOCKER_IMAGE = 'prasad495/java-rest-api-cicd'
+        DOCKER_IMAGE = 'prasad495/java-rest-api-cicd'  // Docker image name
     }
 
     tools {
-        maven 'Maven 3.8.6'  // Use the Maven version installed in Jenkins
+        maven 'Maven 3.8.6'  // Make sure Maven is installed globally in Jenkins
     }
 
     stages {
         stage('Clone Repository') {
             steps {
-                git 'https://github.com/durgaprasad-2809/java-rest-api-cicd.git'
+                // Clone the repo, make sure you're pointing to the correct branch
+                git branch: 'main', url: 'https://github.com/durgaprasad-2809/java-rest-api-cicd.git'
             }
         }
 
         stage('Build with Maven') {
             steps {
+                // Build the project using Maven
                 sh 'mvn clean install'
             }
         }
 
         stage('Build Docker Image') {
             steps {
+                // Build the Docker image
                 sh 'docker build -t $DOCKER_IMAGE .'
             }
         }
@@ -31,7 +34,9 @@ pipeline {
         stage('Push to Docker Hub') {
             steps {
                 withCredentials([usernamePassword(credentialsId: 'dockerhub-creds', usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
+                    // Log in to Docker Hub
                     sh 'echo "$DOCKER_PASS" | docker login -u "$DOCKER_USER" --password-stdin'
+                    // Push the Docker image to Docker Hub
                     sh 'docker push $DOCKER_IMAGE'
                 }
             }
@@ -47,3 +52,4 @@ pipeline {
         }
     }
 }
+
