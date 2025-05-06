@@ -1,10 +1,6 @@
 pipeline {
     agent any
 
-    environment {
-        DOCKER_IMAGE = 'prasad495/java-rest-api-cicd'  // Docker image name
-    }
-
     tools {
         maven 'Maven 3.8.6'  // Make sure Maven is installed globally in Jenkins
     }
@@ -23,22 +19,11 @@ pipeline {
                 sh 'mvn clean install'
             }
         }
-
-        stage('Push to Docker Hub') {
-            steps {
-                withCredentials([usernamePassword(credentialsId: 'dockerhub-creds', usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
-                    // Log in to Docker Hub
-                    sh 'echo "$DOCKER_PASS" | docker login -u "$DOCKER_USER" --password-stdin'
-                    // Push the Docker image to Docker Hub
-                    sh 'docker push $DOCKER_IMAGE'
-                }
-            }
-        }
     }
 
     post {
         success {
-            echo "✅ Build & push successful!"
+            echo "✅ Build successful!"
         }
         failure {
             echo "❌ Build failed."
